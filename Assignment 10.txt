@@ -1,0 +1,66 @@
+10. Read the marks obtained by students of second year in an online examination of a particular subject. Find out the maximum and minimum marks obtained in that subject. Use Max Heap data structure and find the highest marks.
+
+import java.util.*;
+
+public class MaxHeapMarks {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(Collections.reverseOrder()); // Max-Heap for marks
+        int[] marks = null; // To store marks for finding minimum
+        int n = 0; // Number of students
+
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Enter Marks");
+            System.out.println("2. Find Maximum Mark");
+            System.out.println("3. Find Minimum Mark");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1: // Enter marks
+                    System.out.print("Enter the number of students: ");
+                    n = scanner.nextInt();
+                    marks = new int[n];
+                    System.out.println("Enter the marks of the students:");
+                    for (int i = 0; i < n; i++) {
+                        marks[i] = scanner.nextInt();
+                        maxHeap.add(marks[i]); // Add marks to Max-Heap
+                    }
+                    System.out.println("Marks have been entered.");
+                    break;
+
+                case 2: // Find maximum mark
+                    if (maxHeap.isEmpty()) {
+                        System.out.println("No marks available. Please enter marks first.");
+                    } else {
+                        System.out.println("Maximum mark: " + maxHeap.peek());
+                    }
+                    break;
+
+                case 3: // Find minimum mark
+                    if (marks == null || marks.length == 0) {
+                        System.out.println("No marks available. Please enter marks first.");
+                    } else {
+                        int minMark = Integer.MAX_VALUE;
+                        for (int mark : marks) {
+                            if (mark < minMark) {
+                                minMark = mark;
+                            }
+                        }
+                        System.out.println("Minimum mark: " + minMark);
+                    }
+                    break;
+
+                case 4: // Exit
+                    System.out.println("Exiting program. Thank you!");
+                    scanner.close();
+                    return;
+
+                default: // Invalid choice
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}

@@ -1,0 +1,185 @@
+4. Design a phone book application using suitable Trees data structure, enabling users to efficiently insert, search, update, and delete contacts.
+
+import java.util.Scanner;
+
+class ContactNode {
+    String name; // Key for the BST
+    String phone;
+    ContactNode left, right;
+
+    public ContactNode(String name, String phone) {
+        this.name = name;
+        this.phone = phone;
+        this.left = this.right = null;
+    }
+}
+
+class PhoneBook {
+    private ContactNode root;
+
+    // Insert a new contact
+    public void insert(String name, String phone) {
+        root = insertRecursive(root, name, phone);
+    }
+
+    private ContactNode insertRecursive(ContactNode root, String name, String phone) {
+        if (root == null) {
+            return new ContactNode(name, phone);
+        }
+        if (name.compareToIgnoreCase(root.name) < 0) {
+            root.left = insertRecursive(root.left, name, phone);
+        } else if (name.compareToIgnoreCase(root.name) > 0) {
+            root.right = insertRecursive(root.right, name, phone);
+        } else {
+            System.out.println("Contact already exists. Use Update to modify the contact.");
+        }
+        return root;
+    }
+
+    // Search for a contact
+    public void search(String name) {
+        ContactNode result = searchRecursive(root, name);
+        if (result != null) {
+            System.out.println("Contact Found: " + result.name + " - " + result.phone);
+        } else {
+            System.out.println("Contact not found.");
+        }
+    }
+
+    private ContactNode searchRecursive(ContactNode root, String name) {
+        if (root == null || root.name.equalsIgnoreCase(name)) {
+            return root;
+        }
+        if (name.compareToIgnoreCase(root.name) < 0) {
+            return searchRecursive(root.left, name);
+        }
+        return searchRecursive(root.right, name);
+    }
+
+    // Update an existing contact
+    public void update(String name, String newPhone) {
+        ContactNode contact = searchRecursive(root, name);
+        if (contact != null) {
+            contact.phone = newPhone;
+            System.out.println("Contact updated successfully.");
+        } else {
+            System.out.println("Contact not found.");
+        }
+    }
+
+    // Delete a contact
+    public void delete(String name) {
+        root = deleteRecursive(root, name);
+    }
+
+    private ContactNode deleteRecursive(ContactNode root, String name) {
+        if (root == null) {
+            System.out.println("Contact not found.");
+            return null;
+        }
+
+        if (name.compareToIgnoreCase(root.name) < 0) {
+            root.left = deleteRecursive(root.left, name);
+        } else if (name.compareToIgnoreCase(root.name) > 0) {
+            root.right = deleteRecursive(root.right, name);
+        } else {
+            // Node with only one child or no child
+            if (root.left == null) {
+                return root.right;
+            } else if (root.right == null) {
+                return root.left;
+            }
+
+            // Node with two children: Get the in-order successor (smallest in the right subtree)
+            root.name = findMin(root.right).name;
+            root.phone = findMin(root.right).phone;
+
+            // Delete the in-order successor
+            root.right = deleteRecursive(root.right, root.name);
+        }
+        return root;
+    }
+
+    private ContactNode findMin(ContactNode root) {
+        while (root.left != null) {
+            root = root.left;
+        }
+        return root;
+    }
+
+    // Display all contacts (In-order Traversal)
+    public void displayContacts() {
+        System.out.println("Phone Book:");
+        inOrderTraversal(root);
+    }
+
+    private void inOrderTraversal(ContactNode root) {
+        if (root != null) {
+            inOrderTraversal(root.left);
+            System.out.println(root.name + " - " + root.phone);
+            inOrderTraversal(root.right);
+        }
+    }
+}
+
+public class PhoneBookApp {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        PhoneBook phoneBook = new PhoneBook();
+
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Insert Contact");
+            System.out.println("2. Search Contact");
+            System.out.println("3. Update Contact");
+            System.out.println("4. Delete Contact");
+            System.out.println("5. Display Contacts");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Contact Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Enter Phone Number: ");
+                    String phone = scanner.nextLine();
+                    phoneBook.insert(name, phone);
+                    break;
+
+                case 2:
+                    System.out.print("Enter Contact Name to Search: ");
+                    name = scanner.nextLine();
+                    phoneBook.search(name);
+                    break;
+
+                case 3:
+                    System.out.print("Enter Contact Name to Update: ");
+                    name = scanner.nextLine();
+                    System.out.print("Enter New Phone Number: ");
+                    phone = scanner.nextLine();
+                    phoneBook.update(name, phone);
+                    break;
+
+                case 4:
+                    System.out.print("Enter Contact Name to Delete: ");
+                    name = scanner.nextLine();
+                    phoneBook.delete(name);
+                    break;
+
+                case 5:
+                    phoneBook.displayContacts();
+                    break;
+
+                case 6:
+                    System.out.println("Exiting Phone Book Application. Goodbye!");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}

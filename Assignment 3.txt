@@ -1,0 +1,101 @@
+3. Pizza parlour accepting maximum N orders. Orders are served in FCFS basis. Order once placed can’t be cancelled. Write a program to simulate the system using circular QUEUE.
+
+import java.util.Scanner;
+
+public class PizzaParlour {
+    private int[] queue; // Array to store orders
+    private int front;   // Points to the front of the queue
+    private int rear;    // Points to the rear of the queue
+    private int size;    // Maximum number of orders allowed
+    private int count;   // Current number of orders in the queue
+
+    // Constructor
+    public PizzaParlour(int n) {
+        size = n;
+        queue = new int[size];
+        front = 0;
+        rear = -1;
+        count = 0;
+    }
+
+    // Add an order to the queue
+    public void placeOrder(int orderId) {
+        if (count == size) {
+            System.out.println("The queue is full! Cannot place more orders.");
+        } else {
+            rear = (rear + 1) % size; // Circular increment
+            queue[rear] = orderId;
+            count++;
+            System.out.println("Order " + orderId + " placed successfully.");
+        }
+    }
+
+    // Serve an order from the queue
+    public void serveOrder() {
+        if (count == 0) {
+            System.out.println("No orders to serve!");
+        } else {
+            int orderId = queue[front];
+            front = (front + 1) % size; // Circular increment
+            count--;
+            System.out.println("Order " + orderId + " served.");
+        }
+    }
+
+    // Display the current orders in the queue
+    public void displayOrders() {
+        if (count == 0) {
+            System.out.println("No orders in the queue!");
+        } else {
+            System.out.println("Current orders in the queue:");
+            for (int i = 0; i < count; i++) {
+                System.out.print(queue[(front + i) % size] + " ");
+            }
+            System.out.println();
+        }
+    }
+
+    // Main method to run the menu-driven program
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.print("Enter the maximum number of orders the pizza parlour can accept: ");
+        int n = scanner.nextInt();
+
+        PizzaParlour parlour = new PizzaParlour(n);
+
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Place an Order");
+            System.out.println("2. Serve an Order");
+            System.out.println("3. Display Orders");
+            System.out.println("4. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter Order ID to place: ");
+                    int orderId = scanner.nextInt();
+                    parlour.placeOrder(orderId);
+                    break;
+
+                case 2:
+                    parlour.serveOrder();
+                    break;
+
+                case 3:
+                    parlour.displayOrders();
+                    break;
+
+                case 4:
+                    System.out.println("Exiting program. Goodbye!");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}

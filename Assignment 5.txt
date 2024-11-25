@@ -1,0 +1,141 @@
+5. Develop a threaded binary tree data structure allowing nodes to efficiently point to their inorder predecessor and successor. Implement an inorder traversal algorithm leveraging these threads.
+
+import java.util.Scanner;
+
+class ThreadedNode {
+    int data;
+    ThreadedNode left, right;
+    boolean isLeftThread, isRightThread;
+
+    public ThreadedNode(int data) {
+        this.data = data;
+        this.left = this.right = null;
+        this.isLeftThread = this.isRightThread = true; // Initially, threads exist
+    }
+}
+
+class ThreadedBinaryTree {
+    private ThreadedNode root;
+
+    public ThreadedBinaryTree() {
+        root = null;
+    }
+
+    // Insert a new node into the threaded binary tree
+    public void insert(int data) {
+        ThreadedNode newNode = new ThreadedNode(data);
+
+        if (root == null) {
+            root = newNode; // First node becomes the root
+            return;
+        }
+
+        ThreadedNode current = root;
+        ThreadedNode parent = null;
+
+        while (current != null) {
+            parent = current;
+
+            // Traverse to the left or right
+            if (data < current.data) {
+                if (!current.isLeftThread) {
+                    current = current.left;
+                } else {
+                    break; // Found the spot for the new node
+                }
+            } else if (data > current.data) {
+                if (!current.isRightThread) {
+                    current = current.right;
+                } else {
+                    break; // Found the spot for the new node
+                }
+            } else {
+                System.out.println("Duplicate data not allowed: " + data);
+                return;
+            }
+        }
+
+        // Insert the new node and set threads
+        if (data < parent.data) {
+            newNode.left = parent.left;
+            newNode.right = parent;
+            parent.isLeftThread = false;
+            parent.left = newNode;
+        } else {
+            newNode.right = parent.right;
+            newNode.left = parent;
+            parent.isRightThread = false;
+            parent.right = newNode;
+        }
+    }
+
+    // Inorder traversal using threading
+    public void inorderTraversal() {
+        if (root == null) {
+            System.out.println("Tree is empty.");
+            return;
+        }
+
+        ThreadedNode current = root;
+
+        // Move to the leftmost node
+        while (!current.isLeftThread) {
+            current = current.left;
+        }
+
+        // Traverse the tree using threads
+        while (current != null) {
+            System.out.print(current.data + " ");
+
+            // If right thread exists, follow it
+            if (current.isRightThread) {
+                current = current.right;
+            } else {
+                // Move to the leftmost node in the right subtree
+                current = current.right;
+                while (current != null && !current.isLeftThread) {
+                    current = current.left;
+                }
+            }
+        }
+        System.out.println();
+    }
+}
+
+public class ThreadedBinaryTreeApp {
+    public static void main(String[] args) {
+        ThreadedBinaryTree tree = new ThreadedBinaryTree();
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {
+            System.out.println("\nMenu:");
+            System.out.println("1. Insert a Node");
+            System.out.println("2. Perform Inorder Traversal");
+            System.out.println("3. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter the value to insert: ");
+                    int value = scanner.nextInt();
+                    tree.insert(value);
+                    System.out.println("Node inserted successfully.");
+                    break;
+
+                case 2:
+                    System.out.println("Inorder Traversal of the Threaded Binary Tree:");
+                    tree.inorderTraversal();
+                    break;
+
+                case 3:
+                    System.out.println("Exiting the program. Goodbye!");
+                    scanner.close();
+                    return;
+
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
